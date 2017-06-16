@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.AzureServiceBusTransport;
+using MassTransit.Turnout.Contracts;
 using Messaging.Infrastructure.ServiceBus.Models;
 using Microsoft.ServiceBus;
 
@@ -58,6 +59,28 @@ namespace Messaging.Infrastructure.ServiceBus.BusConfigurator
                 }
 
                 SerializerConfigurationExtensions.UseJsonSerializer((IBusFactoryConfigurator) cfg);
+                registrationAction?.Invoke(cfg, host);
+            });
+            return buz;
+        }
+
+        public static IBusControl CreateBus(string connectionString, Action<IBusFactoryConfigurator, IHost> registrationAction = null)
+        {
+            var buz = Bus.Factory.CreateUsingAzureServiceBus(cfg =>
+            {
+                var host = cfg.Host(connectionString, hst =>
+                {
+                    
+                    //hst.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(Configuration.Login,
+                    //    Configuration.Password);
+                });
+
+                // Azure-specific configuration that isn't included in the interface of 'cfg'. Let these comments be, for reference!
+                //var x = (ServiceBusBusFactoryConfigurator) cfg;
+                //x.AutoDeleteOnIdle = TimeSpan.FromMinutes(5); // Minimum is 5 minutes, might change in the future.
+                //x.EnableExpress = false;
+
+                cfg.UseJsonSerializer();
                 registrationAction?.Invoke(cfg, host);
             });
             return buz;
