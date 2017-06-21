@@ -20,7 +20,7 @@ namespace MassTransit
             var acceptedClassSuffices = new[] { "Command", "Event", "Query" };
             if (!messageClassName.EndsWithAnyOf(acceptedClassSuffices))
                 throw new InvalidCastException(
-                    $"Bus Send Endpoints should only be based on commands (class must be suffixed with `Command). Events have no send endpoints. You tried to use: {messageClassName}");
+                    $"Bus Send Endpoints should only be based on commands/queries (class must be suffixed with `Command or `Query). Events have no send endpoints. You tried to use: {messageClassName}");
         }
 
         private static bool EndsWithAnyOf(this string source, IEnumerable<string> acceptableEndings)

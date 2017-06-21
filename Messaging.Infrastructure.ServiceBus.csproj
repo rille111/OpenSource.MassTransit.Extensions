@@ -113,6 +113,7 @@
     <Compile Include="Helpers\BusAddressHelpers.cs" />
     <Compile Include="MassTransitExtensions\BusAddressExtensions.cs" />
     <Compile Include="MassTransitExtensions\BusConfiguratorExtensions.cs" />
+    <Compile Include="MassTransitExtensions\BusRequestClientExtensions.cs" />
     <Compile Include="MassTransitExtensions\BusSendEndpointExtensions.cs" />
     <Compile Include="MassTransitExtensions\ContextExtensions.cs" />
     <Compile Include="Helpers\ValidationHelpers.cs" />
