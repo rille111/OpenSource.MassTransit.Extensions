@@ -7,11 +7,11 @@ namespace MassTransit
     public static class BusAddressHelpers
     {
         /// <summary>
-        /// Send endpoints for Commands
+        /// Send endpoints for Commands. The Command will be delivered to a queue(topic?) with the name of the interface of the Command.
         /// </summary>
         /// <typeparam name="TCommand">Class name must end in 'Command'</typeparam>
         /// <param name="busAddress">The bus address</param>
-        /// <returns>A complete URI to the bus and queue to deliver on.</returns>
+        /// <returns>A complete URI to the bus and queue(topic?) to deliver on.</returns>
         public static Uri CreateSendEndPointUri<TCommand>(Uri busAddress) where TCommand : class, new()
         {
             // var className = typeof(TCommand).Name;

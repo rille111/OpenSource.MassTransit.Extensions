@@ -19,9 +19,9 @@ namespace MassTransit
             TimeSpan timeout, TimeSpan? ttl = null, Action<SendContext<TRequest>> callback = null)
             where TRequest : class where TResponse : class
         {
-            var deliverOnQueue = typeof (TRequest).Name;
-            ValidationHelpers.EnsureNamingConventionForCommand(deliverOnQueue);
-            var requestUri = new Uri(bus.ExtractBusAddress() + "/" + deliverOnQueue);
+            var deliverOnPath = typeof (TRequest).Name;
+            ValidationHelpers.EnsureNamingConventionForCommand(deliverOnPath);
+            var requestUri = new Uri(bus.ExtractBusAddress() + "/" + deliverOnPath);
             return (IRequestClient<TRequest, TResponse>)new MessageRequestClient<TRequest, TResponse>(bus, requestUri, timeout, ttl, callback);
         }
     }

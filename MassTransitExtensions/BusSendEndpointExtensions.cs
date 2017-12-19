@@ -32,15 +32,15 @@ namespace MassTransit
         }
 
         /// <summary>
-        /// Please use the other overloads!
+        /// See the overloads that work with types instead ot this string. But this can be used as an option.
         /// </summary>
-        public static async Task<ISendEndpoint> GetSendEndpointAsync(this IBusControl bus, string deliverOnQueue)
+        public static async Task<ISendEndpoint> GetSendEndpointAsync(this IBusControl bus, string deliverOnPath)
         {
             var newConn = bus.ExtractBusAddress();
 
-            if (deliverOnQueue == null)
-                throw new ArgumentNullException($"{nameof(deliverOnQueue)}");
-            var newUri = new Uri(newConn + "/" + deliverOnQueue);
+            if (deliverOnPath == null)
+                throw new ArgumentNullException($"{nameof(deliverOnPath)}");
+            var newUri = new Uri(newConn + "/" + deliverOnPath);
             var sender = await bus.GetSendEndpoint(newUri);
 
             return sender;

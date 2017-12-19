@@ -110,6 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusConfigurator\ServiceBusTimeoutConfiguration.cs" />
     <Compile Include="Helpers\BusAddressHelpers.cs" />
     <Compile Include="MassTransitExtensions\BusAddressExtensions.cs" />
     <Compile Include="MassTransitExtensions\BusConfiguratorExtensions.cs" />

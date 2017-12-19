@@ -11,74 +11,66 @@ namespace Messaging.Infrastructure.ServiceBus.BusConfigurator
 {
     public class AzureSbBusConfigurator : IBusConfigurator
     {
-        private readonly AzureSbTimeoutConfiguration _azureSbTimeoutConfiguration;
-        // Fields
-
-        public readonly List<Type> Consumers = new List<Type>();
-
         // Properties
-
         public BusConfiguration Configuration { get; set; }
+        public ServiceBusTimeoutConfiguration TimeoutConfig { get; set; }
+        public string ConnectionString { get; set; }
 
-        // Ctor
+        // Ctors
 
-        public AzureSbBusConfigurator(BusConfiguration configuration, AzureSbTimeoutConfiguration azureSbTimeoutConfiguration = null)
+        /// <summary>
+        /// User either BusConfiguration
+        /// </summary>
+        public AzureSbBusConfigurator(BusConfiguration configuration, ServiceBusTimeoutConfiguration timeoutConfig = null)
         {
-            _azureSbTimeoutConfiguration = azureSbTimeoutConfiguration;
+            TimeoutConfig = timeoutConfig;
             Configuration = configuration;
             Configuration.ValidateConfigurationThrows();
         }
 
+        /// <summary>
+        /// Or use a connection string
+        /// </summary>
+        public AzureSbBusConfigurator(string connectionString, ServiceBusTimeoutConfiguration timeoutConfig = null)
+        {
+            TimeoutConfig = timeoutConfig;
+            ConnectionString = connectionString;
+        }
+
         // Implementation
 
-        /// <summary>
-        /// Create & configures a bus. Note: No more consumers can be added after the bus is created.
-        /// </summary>
         public IBusControl CreateBus(Action<IBusFactoryConfigurator, IHost> registrationAction = null)
         {
             var buz = Bus.Factory.CreateUsingAzureServiceBus(cfg =>
             {
-                var connUri = new Uri(Configuration.ConnectionUri);
-                var host = cfg.Host(connUri, hst =>
-                {
-                    hst.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(Configuration.Login,
-                        Configuration.Password);
-                });
+                IServiceBusHost host;
 
-                // Azure-specific configuration that isn't included in the interface of 'cfg'. Let these comments be, for reference!
-                //var x = (ServiceBusBusFactoryConfigurator) cfg;
-                //x.AutoDeleteOnIdle = TimeSpan.FromMinutes(5); // Minimum is 5 minutes, might change in the future.
-                //x.EnableExpress = false;
-
-                if (_azureSbTimeoutConfiguration != null)
+                if (!string.IsNullOrEmpty(ConnectionString))
                 {
-                    // Renew lock to enable jobs to run longer than 5 minutes
-                    cfg.LockDuration = _azureSbTimeoutConfiguration.LockDuration;
-                    if (_azureSbTimeoutConfiguration.UseRenewLock != TimeSpan.Zero)
-                        RenewLockConfigurationExtensions.UseRenewLock(cfg, _azureSbTimeoutConfiguration.UseRenewLock);
+                    host = cfg.Host(ConnectionString, hst => { });
+                }
+                else
+                {
+                    var connUri = new Uri(Configuration.ConnectionUri);
+                    host = cfg.Host(connUri, hst =>
+                    {
+                        hst.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(Configuration.Login,
+                            Configuration.Password);
+                    });
                 }
 
-                SerializerConfigurationExtensions.UseJsonSerializer((IBusFactoryConfigurator) cfg);
-                registrationAction?.Invoke(cfg, host);
-            });
-            return buz;
-        }
-
-        public static IBusControl CreateBus(string connectionString, Action<IBusFactoryConfigurator, IHost> registrationAction = null)
-        {
-            var buz = Bus.Factory.CreateUsingAzureServiceBus(cfg =>
-            {
-                var host = cfg.Host(connectionString, hst =>
-                {
-                    
-                    //hst.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(Configuration.Login,
-                    //    Configuration.Password);
-                });
-
                 // Azure-specific configuration that isn't included in the interface of 'cfg'. Let these comments be, for reference!
                 //var x = (ServiceBusBusFactoryConfigurator) cfg;
                 //x.AutoDeleteOnIdle = TimeSpan.FromMinutes(5); // Minimum is 5 minutes, might change in the future.
                 //x.EnableExpress = false;
+
+                if (TimeoutConfig != null)
+                {
+                    // Renew lock to enable jobs to run longer than 5 minutes
+                    cfg.LockDuration = TimeoutConfig.LockDuration;
+                    if (TimeoutConfig.UseRenewLock != TimeSpan.Zero)
+                        cfg.UseRenewLock(TimeoutConfig.UseRenewLock);
+                }
 
                 cfg.UseJsonSerializer();
                 registrationAction?.Invoke(cfg, host);

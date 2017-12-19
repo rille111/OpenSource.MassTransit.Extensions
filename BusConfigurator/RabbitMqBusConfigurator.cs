@@ -8,22 +8,21 @@ namespace Messaging.Infrastructure.ServiceBus.BusConfigurator
     public class RabbitMqBusConfigurator : IBusConfigurator
     {
         // Properties
-
         public BusConfiguration Configuration { get; set; }
+        public ServiceBusTimeoutConfiguration TimeoutConfig { get; set; }
+        public string ConnectionString { get; set; }
 
-        // Ctor
+        // Ctors
 
         public RabbitMqBusConfigurator(BusConfiguration configuration)
         {
+            Configuration = configuration;
             Configuration = configuration;
             Configuration.ValidateConfigurationThrows();
         }
 
         // Implementation
 
-        /// <summary>
-        /// Create & configures a bus. Note: No more consumers can be added after the bus is created.
-        /// </summary>
         public IBusControl CreateBus(Action<IBusFactoryConfigurator, IHost> registrationAction = null)
         {
             var connUri = new Uri(Configuration.ConnectionUri);
