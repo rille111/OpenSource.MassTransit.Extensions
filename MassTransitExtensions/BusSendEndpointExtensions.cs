@@ -32,6 +32,15 @@ namespace MassTransit
         }
 
         /// <summary>
+        /// You specify the name of the destination queue (Queue name should be unique per any Command)
+        /// </summary>
+        public static ISendEndpoint GetSendEndpoint(this IBusControl bus, string deliverOnQueue)
+        {
+            var task = Task.Run(async () => await GetSendEndpointAsync(bus, deliverOnQueue));
+            return task.Result;
+        }
+
+        /// <summary>
         /// See the overloads that work with types instead ot this string. But this can be used as an option.
         /// </summary>
         public static async Task<ISendEndpoint> GetSendEndpointAsync(this IBusControl bus, string deliverOnPath)
@@ -45,6 +54,5 @@ namespace MassTransit
 
             return sender;
         }
-
     }
 }
