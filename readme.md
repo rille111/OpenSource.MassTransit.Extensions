@@ -1,8 +1,8 @@
-﻿==== Description ===
+# Description
 Infrastructure project contains boilerplate, conventions and helper methods to make usage of MassTransit a breeze to use.
 Some stuff isn't implemented yet so feel free implementing it. For example, extra configuration for message TTL etc.
 
-==== Step by step usage ===
+## Step by step usage
 * Add Messaging.Infrastructure.ServiceBus
 * Nuget add pkgs: MassTransit (and all dependencies) and optional: MassTransit.SimpleInjector, and consolidate packages in solution.
 * In your IoC/Bootup class:
@@ -25,7 +25,7 @@ IMPORTANT
 	* Again: in the same manner, you should cfg.ReceiveEndpoint only on the super-type (interface)
 * Use Azure Service Bus Explorer for investigating the queues, just paste the connection string
 
-==== Setup with submodule  ====
+## Setup with submodule
 * Add submodule > git submodule add git@git:Common/Messaging.git [foldername]
 * Open the solutionfile for this project (Messaging.Infrastructure.sln)
 * Rebuild, so that packages are restored
@@ -33,16 +33,16 @@ IMPORTANT
 * Add this project and rebuild
 * Git commit now!
 
-==== Conventions & Patterns ====
+## Conventions & Patterns
 * Commands  Naming: [Verb][Noun]Command ie 'UpdateOrderCommand' - should be sent by using Bus.Send(), or Endpoint.Send() - only to be executed once, single service instance performs the command action. 
 * Queries   Naming: Get[Noun]Query ie 'GetOrderQuery' - should be sent by using Bus.Send(), or Endpoint.Send(), with request/reply pattern always expecting an answer. Use these as you would use Commands.
 * Events    Naming: [Noun][Verb]Event ie 'OrderUpdatedEvent' - should be published by using Bus.Publish() - to be observed by multiple consumers, see https://www.maldworth.com/2015/10/27/masstransit-send-vs-publish/
 
-==== Queue names and setup ====
+## Queue names and setup
 Use the top-most type, the interface - as the name of the Topic/Queue.
 See: http://docs.masstransit-project.com/en/v2-develop/overview/versioning.html and https://github.com/MassTransit/MassTransit/blob/develop/doc/source/usage/messages.rst
 
-==== Usage examples ====
+## Usage examples
 * Configuration:
 	```
         var busConfig = new BusConfiguration
@@ -106,7 +106,7 @@ See: http://docs.masstransit-project.com/en/v2-develop/overview/versioning.html 
         }	
 	```
 
-==== Help & Refs ====
+## Help & Refs
 http://docs.masstransit-project.com/en/latest/usage/consumer.html
 http://docs.masstransit-project.com/en/latest/usage/messages.html -. on commands vs events, naming and semantics
 
